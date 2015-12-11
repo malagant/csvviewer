@@ -1,0 +1,9 @@
+Metrics/LineLength:
+ Max: 127
+Documentation:
+  Enabled: false
+AllCops:
+  Exclude:
+    - 'Guardfile'
+    - 'bin/**/*'
+    - 'Gemfile'
