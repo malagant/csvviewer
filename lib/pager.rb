@@ -39,7 +39,7 @@ class Pager
   end
 
   def last_page
-    num_records.div(page_length) - ((num_records - last_offset) > 0 ? 0 : 1)
+    num_records.div(page_length)
   end
 
   def last_offset

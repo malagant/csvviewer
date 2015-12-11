@@ -65,6 +65,11 @@ RSpec.describe Pager do
       subject.next
       expect(subject.previous).to eq(first_page)
     end
+
+    it 'returns the previous page when started with last page' do
+      subject.last
+      expect(subject.previous).to eq(second_page)
+    end
   end
 
   describe '#last' do
