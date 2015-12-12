@@ -7,10 +7,10 @@ RSpec.describe Pager do
       { Name: 'Peter', Age: 42, City: 'New York' },
       { Name: 'Paul', Age: 57, City: 'London' },
       { Name: 'Mary', Age: 35, City: 'Munich' },
-      { Name: 'Michael', Age: 42, City: 'Borghorst' },
-      { Name: 'Hans', Age: 37, City: 'Hamburg' },
-      { Name: 'Spacken', Age: 15, City: 'Münster' },
-      { Name: 'Helge', Age: 60, City: 'Mühlheim' }
+      { Name: 'Max', Age: 42, City: 'Paris' },
+      { Name: 'Louisa', Age: 57, City: 'Amsterdam' },
+      { Name: 'Johanna', Age: 35, City: 'Zurich' },
+      { Name: 'Marcus', Age: 45, City: 'Munich' }
     ]
   end
 
@@ -24,51 +24,51 @@ RSpec.describe Pager do
   let(:second_page) do
     [
       { Name: 'Mary', Age: 35, City: 'Munich' },
-      { Name: 'Michael', Age: 42, City: 'Borghorst' }
+      { Name: 'Max', Age: 42, City: 'Paris' }
+    ]
+  end
+
+  let(:third_page) do
+    [
+        { Name: 'Louisa', Age: 57, City: 'Amsterdam' },
+        { Name: 'Johanna', Age: 35, City: 'Zurich' },
     ]
   end
 
   let(:last_page) do
     [
-      { Name: 'Helge', Age: 60, City: 'Mühlheim' }
+      { Name: 'Marcus', Age: 45, City: 'Munich' }
     ]
   end
 
   subject { Pager.new(entries: entries, page_length: page_length) }
 
-  describe '#first' do
-    it 'returns the first page' do
-      expect(subject.first).to eq(first_page)
-    end
-  end
-
   describe '#next' do
-    it 'returns the next page' do
+    it 'returns first page on the first call' do
       expect(subject.next).to eq(first_page)
     end
 
-    it 'returns the next page' do
+    it 'returns second page on the second call' do
       subject.next
       expect(subject.next).to eq(second_page)
     end
 
-    it 'returns the last page when it already is on the last page' do
+    it 'returns last page when it already is on the last page' do
       subject.last
       subject.next
       expect(subject.next).to eq(last_page)
     end
   end
 
-  describe '#previous' do
-    it 'returns the previous page' do
-      subject.next
-      subject.next
-      expect(subject.previous).to eq(first_page)
+  describe '#first' do
+    it 'returns the first page' do
+      expect(subject.first).to eq(first_page)
     end
 
-    it 'returns the previous page when started with last page' do
+    it 'sets "#cursor" to first' do
       subject.last
-      expect(subject.previous).to eq(second_page)
+      subject.first
+      expect(subject.cursor).to eq(0)
     end
   end
 
@@ -77,21 +77,48 @@ RSpec.describe Pager do
       expect(subject.last).to eq(last_page)
     end
 
-    it 'sets "#current_page" to last' do
+    it 'sets "#cursor" to last' do
       subject.last
-      expect(subject.current_page).to eq(3)
+      expect(subject.cursor).to eq(6)
+    end
+  end
+
+  describe '#previous' do
+    it 'returns the previous page' do
+      subject.next
+      subject.next
+
+      expect(subject.previous).to eq first_page
+    end
+
+    it 'sets "#cursor" to the page before' do
+      subject.next
+      subject.next
+
+      expect { subject.previous }.to change { subject.cursor }.by(- page_length)
+    end
+
+    it 'shows the first page when it already is on the first page' do
+      expect(subject.previous).to eq first_page
+    end
+
+    it 'shows the third page when it is on the last page' do
+      subject.last
+      expect(subject.previous).to eq third_page
     end
   end
 
   describe '#last_offset' do
-    it 'returns 0 when "#num_records" is 0' do
-      allow(subject).to receive(:num_records).and_return(0)
+    it 'return 0 when "#cnt_records" is 0' do
+      allow(subject).to receive(:cnt_records).and_return 0
+
       expect(subject.last_offset).to eq(0)
     end
 
-    it 'returns 2 when "#num_records" is "#page_length" + 1' do
-      allow(subject).to receive(:num_records).and_return(page_length + 1)
-      expect(subject.last_offset).to eq(2)
+    it 'return 2 when "#cnt_records" is "#page_length" + 1' do
+      allow(subject).to receive(:cnt_records).and_return 7
+
+      expect(subject.last_offset).to eq(6)
     end
   end
 end

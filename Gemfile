@@ -1,5 +1,5 @@
 # A sample Gemfile
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
 group :development do
   gem 'guard', require: false
@@ -13,5 +13,6 @@ group :development do
   gem 'pry-remote'
   gem 'pry-stack_explorer'
   gem 'pry-byebug'
+
   gem 'rubocop'
 end

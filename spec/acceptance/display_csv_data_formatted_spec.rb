@@ -1,18 +1,19 @@
 require 'spec_helper'
 
 RSpec.feature 'Format CSV data',
-              'As a "user"
-              I want to see nicely formatted output
+              'As a "user",
+               I want to see nicely formated output
                When I call the csv viewer' do
   def captured_prog_out
-    system('./bin/csv_viewer', csv_filename, page_length)
+    system(csv_viewer, csv_filename, page_length.to_s)
   end
 
-  given(:csv_filename) { File.join(__dir__, '..', 'fixtures', 'formatted_csv_spec.csv') }
-  given(:expected_header) { 'Name |Age|City    |' }
-  given(:formatted_csv) { ' To be completed' }
-  given(:page_length) { '2' }
-  given(:expected_formatted_csv) do
+  given(:csv_filename) { 'display_csv_data_formated.csv' }
+  given(:csv_file) { File.join(__dir__, '..', 'fixtures', csv_filename) }
+  given(:page_length) { 3 }
+
+  given(:csv_viewer) { File.join(__dir__, '..', '..', 'bin/csv_viewer') }
+  given(:expected_formated_csv) do
     <<-EOF.split("\n").map(&:lstrip).join("\n")
       Name |Age|City    |
       -----+---+--------+
@@ -24,6 +25,7 @@ RSpec.feature 'Format CSV data',
   end
 
   scenario 'binary is called without a parameter' do
-    expect { captured_prog_out }.to output(expected_formatted_csv).to_stdout_from_any_process
+    expect { captured_prog_out }.to output(expected_formated_csv)
+      .to_stdout_from_any_process
   end
 end
